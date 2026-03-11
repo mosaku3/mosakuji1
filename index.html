@@ -12,8 +12,8 @@
     <meta name="twitter:site" content="@mosaku3">
     <meta name="twitter:title" content="もさくじ">
     <meta name="twitter:description" content="今日の運勢ともさくさんのおすすめの過去ポストがランダムで登場するおみくじです。">
-    <meta name="twitter:image" content="https://mosaku3.github.io//mosakuji/mosakuji.jpg">
-    <meta name="twitter:url" content="https://mosaku3.github.io/mosakuji/">
+    <meta name="twitter:image" content="https://mosaku3.github.io/mosakuji01/mosakuji.jpg">
+    <meta name="twitter:url" content="https://mosaku3.github.io/mosakuji01/">
     <!-- ========================================================= -->
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -410,7 +410,7 @@
             e.preventDefault();
             if(!currentFortune) return;
             const text = `もさくじ引いたよ！\n結果は${currentFortune.text}\n`;
-            const appUrl = "https://mosaku3.github.io/mosakuji/";
+            const appUrl = "https://mosaku3.github.io/mosakuji01/";
             const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(appUrl)}&hashtags=もさくじ`;
             window.open(intentUrl, '_blank');
         });
