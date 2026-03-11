@@ -78,16 +78,16 @@
             <!-- ボタンエリア（上部配置） -->
             <div class="flex flex-col gap-2 mb-5 w-full px-2">
                 <div class="flex flex-row gap-2 w-full">
-                    <!-- おすすめ引用用ボタン -->
-                    <a id="quote-recommend-btn" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 bg-black hover:bg-gray-800 text-white rounded-full font-bold text-xs shadow transition-colors flex justify-center items-center gap-1">
+                    <!-- おすすめ引用用ボタン (aタグからbuttonタグに変更) -->
+                    <button id="quote-recommend-btn" class="flex-1 py-2.5 bg-black hover:bg-gray-800 text-white rounded-full font-bold text-xs shadow transition-colors flex justify-center items-center gap-1">
                         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.968H5.078z"></path></svg>
                         おすすめ引用
-                    </a>
-                    <!-- もさくじ引用用ボタン -->
-                    <a id="quote-app-btn" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 bg-black hover:bg-gray-800 text-white rounded-full font-bold text-xs shadow transition-colors flex justify-center items-center gap-1">
+                    </button>
+                    <!-- もさくじ引用用ボタン (aタグからbuttonタグに変更) -->
+                    <button id="quote-app-btn" class="flex-1 py-2.5 bg-black hover:bg-gray-800 text-white rounded-full font-bold text-xs shadow transition-colors flex justify-center items-center gap-1">
                         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.968H5.078z"></path></svg>
-                        もさくじ引用
-                    </a>
+                        もさくじ紹介
+                    </button>
                 </div>
                 <!-- もう1回ボタン -->
                 <button id="retry-btn" class="w-full py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full font-bold text-sm shadow transition-colors">
@@ -337,6 +337,10 @@
             return match ? match[1] : null;
         }
 
+        // 現在のガチャ結果を保持する変数
+        let currentFortune = null;
+        let currentRecommendUrl = null;
+
         // ガチャを引く処理
         function drawGacha() {
             // UIの状態切り替え
@@ -351,28 +355,20 @@
             tweetContainer.style.opacity = '0';
             tweetContainer.innerHTML = ''; // 前回の結果をクリア
 
-            // ランダムに運勢を選択
-            const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-            fortuneResult.textContent = randomFortune.text;
-            fortuneResult.className = `text-4xl font-black mb-2 drop-shadow-sm ${randomFortune.color}`;
-            fortuneDesc.textContent = randomFortune.desc; // 説明文を表示
+            // ランダムに運勢とURLを選択し、変数に保存
+            currentFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            currentRecommendUrl = postUrls[Math.floor(Math.random() * postUrls.length)];
 
-            // ランダムにURLを選択
-            const randomUrl = postUrls[Math.floor(Math.random() * postUrls.length)];
-            
-            // おすすめ引用ポスト用のテキスト
-            const shareRecommendText = `もさくじ引いたよ！\n結果は${randomFortune.text}\nおすすめポストは ${randomUrl}\n#もさくじ`;
-            quoteRecommendBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareRecommendText)}`;
-
-            // もさくじ引用ポスト用のテキスト
-            const shareAppText = `もさくじ引いたよ！\n結果は${randomFortune.text}\n\nhttps://mosaku3.github.io/x-gacha/\n#もさくじ`;
-            quoteAppBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareAppText)}`;
+            // 画面に結果を表示
+            fortuneResult.textContent = currentFortune.text;
+            fortuneResult.className = `text-4xl font-black mb-2 drop-shadow-sm ${currentFortune.color}`;
+            fortuneDesc.textContent = currentFortune.desc; // 説明文を表示
 
             // URLリンクのHTMLを生成
             const urlHtml = `
                 <div class="w-full break-all">
-                    <a href="${randomUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700 underline font-medium text-sm transition-colors">
-                        ${randomUrl}
+                    <a href="${currentRecommendUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700 underline font-medium text-sm transition-colors">
+                        ${currentRecommendUrl}
                     </a>
                 </div>
             `;
@@ -397,7 +393,27 @@
             headerArea.classList.remove('hidden');
             drawBtn.classList.remove('hidden');
             tweetContainer.innerHTML = '';
+            currentFortune = null;
+            currentRecommendUrl = null;
         }
+
+        // 引用ポストボタンのクリック処理（クリック時に確実にURLを生成して開く）
+        quoteRecommendBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if(!currentFortune || !currentRecommendUrl) return;
+            const text = `もさくじ引いたよ！\n結果は${currentFortune.text}\nおすすめポストは 👇`;
+            const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(currentRecommendUrl)}&hashtags=もさくじ`;
+            window.open(intentUrl, '_blank');
+        });
+
+        quoteAppBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if(!currentFortune) return;
+            const text = `もさくじ引いたよ！\n結果は${currentFortune.text}\n`;
+            const appUrl = "https://mosaku3.github.io/mosakuji/";
+            const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(appUrl)}&hashtags=もさくじ`;
+            window.open(intentUrl, '_blank');
+        });
 
         // イベントリスナーの設定
         drawBtn.addEventListener('click', drawGacha);
